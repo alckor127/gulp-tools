@@ -1,11 +1,13 @@
 const gulp = require("gulp");
 const minifycss = require("gulp-clean-css");
+const concat = require("gulp-concat");
 const gulpif = require("gulp-if");
 const notify = require("gulp-notify");
 const rename = require("gulp-rename");
 const rimraf = require("gulp-rimraf");
 const sass = require("gulp-sass");
 const sourcemaps = require("gulp-sourcemaps");
+const uglify = require("gulp-uglify");
 const gutil = require("gulp-util");
 const argv = require("yargs").argv;
 
@@ -15,8 +17,6 @@ const argv = require("yargs").argv;
 // --------------------------
 
 const production = !!argv.prod;
-
-console.log("production", production);
 
 // ----------------------------
 // ERROR NOTIFICATION
@@ -42,10 +42,12 @@ const dist_root = "./dist";
 const paths = {
   src: {
     sass: src_root + "/scss/*.scss",
+    js: src_root + "/js/**",
   },
   build: {
     clean: build_root + "/",
     css: build_root + "/css",
+    js: build_root + "/js",
   },
   dist: {
     clean: dist_root + "/",
@@ -85,13 +87,17 @@ const tasks = {
       .pipe(rename("bundle.css"))
       .pipe(gulp.dest(paths.build.css));
   },
+  js: () => {
+    return gulp.src([paths.src.js]).pipe(concat("bundle.js")).pipe(uglify()).pipe(gulp.dest(paths.build.js));
+  },
   distCopy: () => {
     return gulp
       .src([build_root + "/**/*.*", "!" + build_root + "/*.js"], { base: build_root })
       .pipe(gulp.dest(dist_root));
   },
   watch: () => {
-    gulp.watch(paths.src.sass, gulp.series("sass"));
+    gulp.watch(src_root + "/scss/**/*.scss", gulp.series("sass"));
+    gulp.watch(src_root + "/js/**/*.js", gulp.series("js"));
   },
 };
 
@@ -101,11 +107,13 @@ const tasks = {
 
 gulp.task("clean", tasks.clean);
 gulp.task("sass", tasks.sass);
+gulp.task("js", tasks.js);
 
 // build chain builds all to ./build
-gulp.task("build", gulp.series("sass"));
+gulp.task("build", gulp.series("sass", "js"));
 
 gulp.task("watch", tasks.watch);
+
 gulp.task("dist", gulp.series("build", tasks.distCopy));
 
 gulp.task("default", gulp.series("watch"));

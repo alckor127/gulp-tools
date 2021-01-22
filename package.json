@@ -6,6 +6,7 @@
   "scripts": {
     "clean": "gulp clean",
     "sass": "gulp sass",
+    "js": "gulp js",
     "build": "gulp build",
     "prepare": "gulp build --prod",
     "watch": "gulp",

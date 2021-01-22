@@ -3,3 +3,9 @@ body {
   background-color: seagreen;
   color: white;
 }
+
+a {
+  color: black;
+}
+
+@import "utils/example.scss";
