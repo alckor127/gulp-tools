@@ -1,7 +1,7 @@
 {
-  "name": "gulp-test",
+  "name": "gulp-tools",
   "version": "1.0.0",
-  "description": "Gulp WebTools",
+  "description": "Gulpjs Tools",
   "main": "dist/js/bundle.js",
   "scripts": {
     "clean": "gulp clean",
@@ -12,15 +12,18 @@
     "watch": "gulp",
     "dist": "npm run clean && npm run prepare && gulp dist"
   },
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "Gulpjs",
+    "Webtools",
+    "Tools"
+  ],
+  "author": "Francisco Luis Rios Vega (http://devfran.com)",
+  "license": "MIT",
   "devDependencies": {
     "gulp": "^4.0.2",
     "gulp-clean-css": "^4.3.0",
     "gulp-concat": "^2.6.1",
     "gulp-if": "^3.0.0",
-    "gulp-jade": "^1.1.0",
-    "gulp-jshint": "^2.1.0",
     "gulp-notify": "^3.2.0",
     "gulp-rename": "^2.0.0",
     "gulp-rimraf": "^1.0.0",
@@ -28,8 +31,17 @@
     "gulp-sourcemaps": "^3.0.0",
     "gulp-uglify": "^3.0.2",
     "gulp-util": "^3.0.8",
-    "jshint-stylish": "^2.2.1",
-    "merge-stream": "^2.0.0",
     "yargs": "^16.2.0"
-  }
+  },
+  "dependencies": {
+    "merge-stream": "^2.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alckor127/gulp-tools.git"
+  },
+  "bugs": {
+    "url": "https://github.com/alckor127/gulp-tools/issues"
+  },
+  "homepage": "https://github.com/alckor127/gulp-tools#readme"
 }
