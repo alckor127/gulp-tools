@@ -10,7 +10,7 @@
     "build": "gulp build",
     "prepare": "gulp build --prod",
     "watch": "gulp",
-    "dist": "npm run clean && npm run prepare && gulp dist"
+    "dist": "npm run clean && npm run prepare"
   },
   "keywords": [
     "Gulpjs",
@@ -20,7 +20,10 @@
   "author": "Francisco Luis Rios Vega (http://devfran.com)",
   "license": "MIT",
   "devDependencies": {
+    "@babel/core": "^7.13.16",
+    "@babel/preset-env": "^7.13.15",
     "gulp": "^4.0.2",
+    "gulp-babel": "^8.0.0",
     "gulp-clean-css": "^4.3.0",
     "gulp-concat": "^2.6.1",
     "gulp-if": "^3.0.0",

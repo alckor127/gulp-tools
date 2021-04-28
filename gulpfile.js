@@ -10,6 +10,7 @@ const sourcemaps = require("gulp-sourcemaps");
 const uglify = require("gulp-uglify");
 const gutil = require("gulp-util");
 const argv = require("yargs").argv;
+const babel = require("gulp-babel");
 
 // --------------------------
 // CMD ARGUMENTS
@@ -37,20 +38,18 @@ var handleError = (task) => {
 // --------------------------
 
 const src_root = "./src";
-const build_root = "./build";
 const dist_root = "./dist";
 const paths = {
   src: {
     sass: src_root + "/scss/*.scss",
+    sassRecurse: src_root + "/scss/**/*.scss",
     js: src_root + "/js/**",
-  },
-  build: {
-    clean: build_root + "/",
-    css: build_root + "/css",
-    js: build_root + "/js",
+    jsRecurse: src_root + "/js/**/*.js",
   },
   dist: {
     clean: dist_root + "/",
+    css: dist_root + "/css",
+    js: dist_root + "/js",
   },
 };
 
@@ -61,7 +60,7 @@ const paths = {
 const tasks = {
   clean: () => {
     return gulp
-      .src([paths.build.clean, paths.dist.clean], {
+      .src(paths.dist.clean, {
         read: false,
         allowEmpty: true,
       })
@@ -70,34 +69,27 @@ const tasks = {
   sass: () => {
     return gulp
       .src(paths.src.sass)
-      .pipe(gulpif(!production, sourcemaps.init()))
+      .pipe(gulpif(production, sourcemaps.init()))
       .pipe(sass({ sourceComments: !production, outputStyle: production ? "compressed" : "nested" }))
       .on("error", handleError("SASS"))
-      .pipe(minifycss())
-      .pipe(gulpif(!production, sourcemaps.write({ includeContent: false, sourceRoot: "." })))
-      .pipe(
-        gulpif(
-          !production,
-          sourcemaps.init({
-            loadMaps: true,
-          })
-        )
-      )
-      .pipe(sourcemaps.write({ includeContent: true }))
+      .pipe(gulpif(production, minifycss()))
       .pipe(rename("bundle.css"))
-      .pipe(gulp.dest(paths.build.css));
+      .pipe(gulpif(production, sourcemaps.write(".")))
+      .pipe(gulp.dest(paths.dist.css));
   },
   js: () => {
-    return gulp.src([paths.src.js]).pipe(concat("bundle.js")).pipe(uglify()).pipe(gulp.dest(paths.build.js));
-  },
-  distCopy: () => {
     return gulp
-      .src([build_root + "/**/*.*", "!" + build_root + "/*.js"], { base: build_root })
-      .pipe(gulp.dest(dist_root));
+      .src([paths.src.js])
+      .pipe(gulpif(production, sourcemaps.init()))
+      .pipe(babel({ presets: ["@babel/env"] }))
+      .pipe(concat("bundle.js"))
+      .pipe(gulpif(production, uglify()))
+      .pipe(gulpif(production, sourcemaps.write(".")))
+      .pipe(gulp.dest(paths.dist.js));
   },
   watch: () => {
-    gulp.watch(src_root + "/scss/**/*.scss", gulp.series("sass"));
-    gulp.watch(src_root + "/js/**/*.js", gulp.series("js"));
+    gulp.watch(paths.src.sassRecurse, gulp.series("sass"));
+    gulp.watch(paths.src.jsRecurse, gulp.series("js"));
   },
 };
 
@@ -113,7 +105,5 @@ gulp.task("js", tasks.js);
 gulp.task("build", gulp.series("sass", "js"));
 
 gulp.task("watch", tasks.watch);
-
-gulp.task("dist", gulp.series("build", tasks.distCopy));
 
 gulp.task("default", gulp.series("watch"));
